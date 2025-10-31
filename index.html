@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pessoas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #painel {
+            display: none;
+        }
+        #inicio {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="inicio">
+        <p>CPF:<input type="text" id="cpf"></p><br>
+        <p>Senha:<input type="text" id="senha"></p><br>
+        <p><button onclick="logar()">Logar</button></p> 
+    </div>
+    <div id="painel">
+        <p>CPF:<input type="text" id="cpfagenda"></p><br>
+        <p>Data:<input type="date" id="data"></p><br>
+        <p>Descrição:<input type="text" id="descricao"></p><br>
+
+        <p><button id="resposta1" onclick="agendar()">Agendar</button></p>
+        <p><button id="resposta2" onclick="atualizarAgenda()">Atualizar Agenda</button></p>
+        <p><button id="resposta3" onclick="consultarAgenda()">Consultar Agenda</button></p>
+        <p><button id="resposta4" onclick="apagarAgenda()">Apagar Agenda</button></p>
+    </div>
+    <script>
+
+        function logar() {
+            var cpf = document.getElementById("cpf").value
+            var senha = document.getElementById("senha").value
+            var requisicao = new XMLHttpRequest();  
+            
+            var requisicao = new XMLHttpRequest();//Requisição HTML
+            requisicao.open("GET", "controllerPessoa.php?cpf=" + cpf + "&senha=" + senha + "&acao=validaPessoa");
+            requisicao.send();
+
+            requisicao.onload = function(){
+                var organizacao=JSON.parse(this.responseText);
+                if(organizacao.length>0){
+                    document.getElementById("inicio").style.display="none";
+                    document.getElementById("painel").style.display="block";
+                }
+            }
+        }
+        
+        function inserir(){
+            var cpf = document.getElementById("cpfagenda").value  
+            var nome = document.getElementById("nome").value  
+            var contato = document.getElementById("contato").value  
+            var senha = document.getElementById("senhaagenda").value  
+           
+            var requisicao = new XMLHttpRequest();
+            requisicao.open("GET","controllerPessoa.php?cpf="+cpf+"&nome="+nome+"&contato="+contato+"&senha="+senha+"&acao=inserir")
+            requisicao.send();
+
+            requisicao.onload= function(){
+                document.querySelector("resposta").innerHTML = this.responseText;
+            }
+        }
+        function atualizar(){
+            var cpf = document.getElementById("cpf").value
+            var requisicao = new XMLHttpRequest();
+            var nome = document.getElementById("nome").value  
+            var contato = document.getElementById("contato").value  
+            var senha = document.getElementById("senha").value  
+
+           requisicao.open("GET","controllerPessoa.php?cpf="+cpf+"&nome="+nome+"&contato="+contato+"&senha="+senha+"&acao=atualizar")
+           requisicao.send();
+
+            requisicao.onload= function(){
+                document.querySelector("resposta").innerHTML = this.responseText;
+            }
+        }   
+        
+    function deletar(){
+            var cpf = document.getElementById('cpf').value;
+            var resposta = document.getElementById('resposta');
+
+            var requisicao = new XMLHttpRequest();
+
+           requisicao.open("GET",`controllerPessoa.php?cpf=${cpf}&acao=apagar`)
+           requisicao.send();
+
+            requisicao.onload= function(){
+                document.querySelector("resposta").innerHTML = this.responseText;
+            }
+        }   
+
+
+        const respo = document.querySelector("#resposta");
+        const bot = document.querySelector("#consulta");
+        
+        function consulta(){
+            var requisicao = new XMLHttpRequest();//Requisição HTML
+            requisicao.open ("POST", "controllerPessoa.php?acao=consultar")
+            requisicao.send();
+
+            requisicao.onload = function(){
+                var organizacao = JSON.parse(this.responseText);
+                var resultado = ""; 
+
+                for(let i = 0; i < organizacao.length; i++){
+                    resultado += "<br><br>PESSOA " + (i + 1) +
+                    "<br>CPF: "+ organizacao[i].cpf +
+                    "<br>NOME: " + organizacao[i].nome +
+                    "<br>CONTATO: "+ organizacao[i].contato;
+                }
+                respo.innerHTML = resultado;
+            }
+        }
+        function agendar(){
+            var cpf = document.getElementById("cpfagenda").value  
+            var data = document.getElementById("data").value  
+            var descricao = document.getElementById("descricao").value  
+           
+            var requisicao = new XMLHttpRequest();
+            requisicao.open("GET","controllerAgenda.php?cpf="+cpf+"&data="+data+"&descricao="+descricao+"&acao=inserir")
+            requisicao.send();
+
+            requisicao.onload= function(){
+                document.getElementById("resposta1").innerHTML = this.responseText;
+            }
+        }
+
+        function atualizarAgenda(){
+            var cpf = document.getElementById("cpfagenda").value  
+            var data = document.getElementById("data").value  
+            var descricao = document.getElementById("descricao").value  
+           
+            var requisicao = new XMLHttpRequest();
+            requisicao.open("GET","controllerAgenda.php?cpf="+cpf+"&data="+data+"&descricao="+descricao+"&acao=atualizar")
+            requisicao.send();
+
+            requisicao.onload= function(){
+                document.getElementById("resposta2").innerHTML = this.responseText;
+            }
+        }
+
+        function consultarAgenda(){
+            var cpf = document.getElementById("cpfagenda").value  
+            var data = document.getElementById("data").value  
+            var descricao = document.getElementById("descricao").value  
+           
+            var requisicao = new XMLHttpRequest();
+            requisicao.open("GET","controllerAgenda.php?cpf="+cpf+"&data="+data+"&descricao="+descricao+"&acao=consultar")
+            requisicao.send();
+
+            requisicao.onload= function(){
+                document.getElementById("resposta3").innerHTML = this.responseText;
+            }
+        }
+
+        function apagarAgenda(){
+            var cpf = document.getElementById("cpfagenda").value  
+            var data = document.getElementById("data").value  
+            var descricao = document.getElementById("descricao").value  
+           
+            var requisicao = new XMLHttpRequest();
+            requisicao.open("GET","controllerAgenda.php?cpf="+cpf+"&data="+data+"&descricao="+descricao+"&acao=apagar")
+            requisicao.send();
+
+            requisicao.onload= function(){
+                document.getElementById("resposta4").innerHTML = this.responseText;
+            }
+        }
+        bot.onclick = consulta;
+    </script>
+</body>
+</html>
