@@ -13,7 +13,7 @@
             $stm->bindValue(3, $agenda->getDescricao());
             $resultado = $stm->execute();
             if($resultado){
-                echo "cadastrado com sucesso";
+                echo "agendado com sucesso";
             }else{
                 echo "erro ao cadastrar";
             }
@@ -67,4 +67,5 @@
 
         }
     }
+
 ?>
